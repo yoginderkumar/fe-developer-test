@@ -16,7 +16,7 @@ type Story = StoryObj<typeof meta>;
 
 export const Primary: Story = {
   args: {
-    children: "Connnect Destinations",
+    children: "Connect Destinations",
     isLoading: false,
     variant: "default",
     onClick: () => {

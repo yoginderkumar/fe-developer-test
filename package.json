@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "./generate-index.sh && tsup --dts-resolve",
+    "build:windows": "sh ./generate-index.sh && tsup --dts-resolve",
     "prepublishOnly": "pnpm run build",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",

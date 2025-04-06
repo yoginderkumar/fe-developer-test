@@ -1,18 +1,10 @@
-import { DateRange } from "react-date-range";
+import { DateRange, RangeKeyDict } from "react-date-range";
 import dayjs from "dayjs";
 import Button from "@/components/Atoms/Controls/Button";
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FiCalendar } from "react-icons/fi";
-
-export enum DatePickerPresets {
-  today = "Today",
-  yesterday = "Yesterday",
-  lastWeek = "Last Week",
-  lastMonth = "Last Month",
-  lastThreeMonths = "Last 3 Months",
-  custom = "Custom",
-}
+import { DatePickerPresets, presetsToDateRange } from "./utils";
 
 export interface DatePickerProps {
   /**
@@ -59,36 +51,6 @@ export interface DatePickerProps {
   setIsOpen: (isOpen: boolean) => void;
 }
 
-export const presetsToDateRange = (preset: DatePickerPresets): [Date, Date] => {
-  const now = dayjs();
-  switch (preset) {
-    case DatePickerPresets.today:
-      return [now.startOf("day").toDate(), now.endOf("day").toDate()];
-    case DatePickerPresets.yesterday:
-      return [
-        now.subtract(1, "day").startOf("day").toDate(),
-        now.subtract(1, "day").endOf("day").toDate(),
-      ];
-    case DatePickerPresets.lastWeek:
-      return [
-        now.subtract(1, "week").startOf("week").toDate(),
-        now.subtract(1, "week").endOf("week").toDate(),
-      ];
-    case DatePickerPresets.lastMonth:
-      return [
-        now.subtract(1, "month").startOf("month").toDate(),
-        now.subtract(1, "month").endOf("month").toDate(),
-      ];
-    case DatePickerPresets.lastThreeMonths:
-      return [
-        now.subtract(3, "month").startOf("month").toDate(),
-        now.endOf("month").toDate(),
-      ];
-    default:
-      return [now.startOf("day").toDate(), now.endOf("day").toDate()];
-  }
-};
-
 /**
  * DateRangePicker is a component that allows users to select a date range.
  * It supports both manual date selection and preset ranges like Today, Yesterday, Last Week, etc.
@@ -103,7 +65,7 @@ const DateRangePicker: React.FC<DatePickerProps> = ({
   onSave,
   isOpen,
 }) => {
-  const handleRangeChange = (ranges: any) => {
+  const handleRangeChange = (ranges: RangeKeyDict) => {
     const { selection } = ranges;
     const start = dayjs(selection.startDate);
     const end = dayjs(selection.endDate);
@@ -112,7 +74,7 @@ const DateRangePicker: React.FC<DatePickerProps> = ({
       return;
     }
 
-    onChange([selection.startDate, selection.endDate]);
+    onChange([selection.startDate || null, selection.endDate || null]);
   };
 
   const handlePresetChange = (preset: DatePickerPresets) => {

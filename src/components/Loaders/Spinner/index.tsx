@@ -1,5 +1,7 @@
+export type SpinnerSize = "xs" | "sm" | "md" | "lg" | "xl";
+
 type SpinnerProps = {
-  size?: "xs" | "sm" | "md" | "lg" | "xl";
+  size?: SpinnerSize;
   trackColor?: string;
   spinnerColor?: string;
   className?: string;

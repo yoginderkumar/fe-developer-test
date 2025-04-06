@@ -1,12 +1,19 @@
-import Spinner from "@/components/Loaders/Spinner";
+import Spinner, { SpinnerSize } from "@/components/Loaders/Spinner";
 import React from "react";
 import { tv } from "tailwind-variants";
 
+type ButtonVariant =
+  | "default"
+  | "secondary"
+  | "destructive"
+  | "success"
+  | "outline";
+
 type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
-  variant?: "default" | "secondary" | "destructive" | "success" | "outline";
+  variant?: ButtonVariant;
   size?: "default" | "small";
   isLoading?: boolean;
-  spinnerSize?: "xs" | "sm" | "md" | "lg" | "xl";
+  spinnerSize?: SpinnerSize;
 };
 
 export default function Button({
@@ -15,8 +22,8 @@ export default function Button({
   className,
   isLoading = false,
   size = "default",
+  spinnerSize,
   disabled,
-  spinnerSize = "md",
   ...props
 }: ButtonProps) {
   const buttonVariants = tv({
@@ -35,8 +42,8 @@ export default function Button({
           "bg-transparent border border-primary-400 hover:bg-primary-600 disabled:border-primary-300 disabled:text-primary-300 disabled:cursor-not-allowed",
       },
       size: {
-        default: "py-3 px-6 rounded-lg",
-        small: " px-2 py-1 rounded",
+        default: "h-[40px] px-6 rounded-lg",
+        small: "px-2 h-[32px] rounded",
       },
     },
   });
@@ -57,8 +64,7 @@ export default function Button({
 
   // Determine spinner size based on button size if not explicitly provided
   const getSpinnerSize = () => {
-    if (spinnerSize) return spinnerSize;
-    return size === "small" ? "xs" : "sm";
+    return spinnerSize ? spinnerSize : size === "small" ? "sm" : "md";
   };
 
   return (
@@ -73,9 +79,8 @@ export default function Button({
           trackColor={getSpinnerColors().trackColor}
           spinnerColor={getSpinnerColors().spinnerColor}
         />
-      ) : (
-        children
-      )}
+      ) : null}
+      {children}
     </button>
   );
 }

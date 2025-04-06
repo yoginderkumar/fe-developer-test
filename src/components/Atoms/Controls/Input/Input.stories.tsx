@@ -1,6 +1,6 @@
 import React from "react";
 import { Meta, StoryObj } from "@storybook/react";
-import Input from "./index"; // Adjust this import path as needed
+import Input, { CustomChangeEvent } from "./index"; // Adjust this import path as needed
 import { Button, Form } from "@/components";
 
 const meta: Meta<typeof Input> = {
@@ -27,17 +27,41 @@ const InputWrapper: React.FC<React.ComponentProps<typeof Input>> = (args) => {
   );
 };
 
+// For stories that need multiple inputs or custom form logic
+const MultipleInputsWrapper: React.FC<{
+  children: React.ReactNode;
+}> = ({ children }) => {
+  return (
+    <Form onSubmit={(data) => console.log("data: ", data)}>
+      {children}
+      <Button type="submit" style={{ marginTop: "10px" }}>
+        Submit
+      </Button>
+    </Form>
+  );
+};
+
 export const Text: Story = {
   args: {
     name: "textInput",
     type: "text",
     label: "Text Input",
     required: true,
-    disabled: true,
+    disabled: false,
     tooltip: "This is a tooltip",
 
     placeholder: "Enter text",
     defaultValue: "Hi theres",
+  },
+  render: (args) => <InputWrapper {...args} />,
+};
+
+export const TextWithDefaultValue: Story = {
+  args: {
+    ...Text.args,
+    name: "textWithDefaultValue",
+    defaultValue: "Default text value",
+    label: "Text Input with Default Value",
   },
   render: (args) => <InputWrapper {...args} />,
 };
@@ -48,6 +72,7 @@ export const Email: Story = {
     type: "email",
     label: "Email Input",
     placeholder: "Enter email",
+    tooltip: "Must be a valid email format (e.g., user@example.com)",
   },
   render: (args) => <InputWrapper {...args} />,
 };
@@ -58,6 +83,8 @@ export const Password: Story = {
     type: "password",
     label: "Password Input",
     placeholder: "Enter password",
+    tooltip:
+      "Password must be at least 8 characters with uppercase, lowercase, number, and special character",
   },
   render: (args) => <InputWrapper {...args} />,
 };
@@ -68,6 +95,7 @@ export const Number: Story = {
     type: "number",
     label: "Number Input",
     placeholder: "Enter number",
+    tooltip: "Must be a positive number",
   },
   render: (args) => <InputWrapper {...args} />,
 };
@@ -78,6 +106,7 @@ export const Tel: Story = {
     type: "tel",
     label: "Telephone Input",
     placeholder: "Enter phone number",
+    tooltip: "Must be 10 digits (e.g., 1234567890)",
   },
   render: (args) => <InputWrapper {...args} />,
 };
@@ -86,10 +115,34 @@ export const Radio: Story = {
   args: {
     name: "radioInput",
     type: "radio",
-    label: "Radio Input",
+    label: "Radio Input", // Won't be displayed as label for radio type
     radioOptions: [
       { label: "Option 1", value: "1" },
       { label: "Option 2", value: "2" },
+      { label: "Option 3", value: "3" },
+    ],
+  },
+  render: (args) => <InputWrapper {...args} />,
+};
+
+export const RadioWithDefaultSelected: Story = {
+  args: {
+    ...Radio.args,
+    name: "radioWithDefault",
+    defaultValue: "2",
+    label: "Radio with Default Selection",
+  },
+  render: (args) => <InputWrapper {...args} />,
+};
+
+export const RadioWithDisabledOptions: Story = {
+  args: {
+    ...Radio.args,
+    name: "radioWithDisabled",
+    label: "Radio with Disabled Options",
+    radioOptions: [
+      { label: "Option 1", value: "1" },
+      { label: "Option 2 (Disabled)", value: "2", disabled: true },
       { label: "Option 3", value: "3" },
     ],
   },
@@ -100,7 +153,18 @@ export const Switch: Story = {
   args: {
     name: "switchInput",
     type: "switch",
-    label: "Switch Input",
+    label: "Switch Input", // Will be displayed next to the switch
+    tooltip: "Toggle this switch",
+  },
+  render: (args) => <InputWrapper {...args} />,
+};
+
+export const SwitchCheckedByDefault: Story = {
+  args: {
+    ...Switch.args,
+    name: "switchChecked",
+    label: "Switch Checked by Default",
+    defaultValue: "true",
   },
   render: (args) => <InputWrapper {...args} />,
 };
@@ -116,6 +180,18 @@ export const Dropdown: Story = {
       { label: "Option 2", key: "2" },
       { label: "Option 3", key: "3" },
     ],
+    tooltip: "Select an option from the dropdown",
+  },
+  render: (args) => <InputWrapper {...args} />,
+};
+
+export const DropdownWithNoDefault: Story = {
+  args: {
+    ...Dropdown.args,
+    name: "dropdownNoDefault",
+    label: "Dropdown with No Default",
+    defaultValue: undefined,
+    placeholder: "Select an option",
   },
   render: (args) => <InputWrapper {...args} />,
 };
@@ -127,19 +203,62 @@ export const WithBadge: Story = {
     label: "Input with Badge",
     badge: "Optional",
     placeholder: "Enter text",
+    required: false,
+    tooltip: "This field is optional as indicated by the badge",
   },
   render: (args) => <InputWrapper {...args} />,
 };
 
 export const Disabled: Story = {
-  args: {
-    name: "disabledInput",
-    type: "text",
-    label: "Disabled Input",
-    placeholder: "This input is disabled",
-    disabled: true,
-  },
-  render: (args) => <InputWrapper {...args} />,
+  render: () => (
+    <MultipleInputsWrapper>
+      <div className="space-y-4">
+        <Input
+          name="disabledText"
+          type="text"
+          label="Disabled Text Input"
+          placeholder="This input is disabled"
+          defaultValue="You cannot edit this"
+          disabled={true}
+        />
+        <Input
+          name="disabledPassword"
+          type="password"
+          label="Disabled Password"
+          defaultValue="password123"
+          disabled={true}
+        />
+        <Input
+          name="disabledRadio"
+          type="radio"
+          radioOptions={[
+            { label: "Option 1", value: "1" },
+            { label: "Option 2", value: "2" },
+          ]}
+          defaultValue="1"
+          disabled={true}
+        />
+        <Input
+          name="disabledSwitch"
+          type="switch"
+          label="Disabled Switch"
+          defaultValue={"true"}
+          disabled={true}
+        />
+        <Input
+          name="disabledDropdown"
+          type="dropdown"
+          label="Disabled Dropdown"
+          defaultValue="Option 1"
+          dropdownOptions={[
+            { label: "Option 1", key: "1" },
+            { label: "Option 2", key: "2" },
+          ]}
+          disabled={true}
+        />
+      </div>
+    </MultipleInputsWrapper>
+  ),
 };
 
 export const WithCustomValidation: Story = {
@@ -162,21 +281,66 @@ export const WithCustomOnChange: Story = {
     type: "text",
     label: "Custom OnChange Input",
     placeholder: "Type something",
-    onChange: (e: any) => {
+    onChange: (e: React.ChangeEvent<HTMLInputElement> | CustomChangeEvent) => {
       if ("target" in e) {
         console.log("Custom onChange:", e.target.value);
-      } else {
-        console.log("Custom onChange:", e.value);
       }
     },
   },
   render: (args) => <InputWrapper {...args} />,
 };
 
+export const WithCustomRegexValidation: Story = {
+  args: {
+    name: "regexValidationInput",
+    type: "text",
+    label: "Letters Only Input",
+    placeholder: "Enter letters only (a-z, A-Z)",
+    customValidation: {
+      pattern: {
+        value: /^[A-Za-z]+$/,
+        message: "Only letters are allowed",
+      },
+    },
+    tooltip: "Only letters (A-Z, a-z) are allowed",
+  },
+  render: (args) => <InputWrapper {...args} />,
+};
+
+export const WithDifferentWidths: Story = {
+  render: () => (
+    <MultipleInputsWrapper>
+      <div className="space-y-4">
+        <Input
+          name="fullWidthInput"
+          type="text"
+          label="Full Width Input"
+          placeholder="This takes up the full width"
+          className="w-full"
+        />
+        <Input
+          name="halfWidthInput"
+          type="text"
+          label="Half Width Input"
+          placeholder="This takes up half the width"
+          className="w-1/2"
+        />
+        <Input
+          name="quarterWidthInput"
+          type="text"
+          label="This is a very long label that demonstrates how the component handles lengthy text in the label area"
+          placeholder="Quarter width"
+          className="w-1/4"
+        />
+      </div>
+    </MultipleInputsWrapper>
+  ),
+};
+
 Text.parameters = {
   docs: {
     description: {
-      story: "A basic text input field.",
+      story: "A basic text input field for general string input.",
     },
   },
 };
@@ -184,7 +348,8 @@ Text.parameters = {
 Email.parameters = {
   docs: {
     description: {
-      story: "An email input field with built-in email validation.",
+      story:
+        "An email input field with built-in validation that checks for proper email format (name@domain.com).",
     },
   },
 };
@@ -192,7 +357,8 @@ Email.parameters = {
 Password.parameters = {
   docs: {
     description: {
-      story: "A password input field with strong password validation.",
+      story:
+        "A password input field with show/hide toggle and strong password validation rules.",
     },
   },
 };
@@ -200,7 +366,8 @@ Password.parameters = {
 Number.parameters = {
   docs: {
     description: {
-      story: "A number input field that only accepts numeric values.",
+      story:
+        "A number input field that only accepts numeric values with built-in validation for positive numbers.",
     },
   },
 };
@@ -208,7 +375,8 @@ Number.parameters = {
 Tel.parameters = {
   docs: {
     description: {
-      story: "A telephone input field with phone number validation.",
+      story:
+        "A telephone input field with phone number validation for 10-digit numbers.",
     },
   },
 };
@@ -216,7 +384,17 @@ Tel.parameters = {
 Radio.parameters = {
   docs: {
     description: {
-      story: "A radio button group input.",
+      story:
+        "A radio button group for selecting a single option from a list of choices.",
+    },
+  },
+};
+
+RadioWithDisabledOptions.parameters = {
+  docs: {
+    description: {
+      story:
+        "Radio button group with certain options disabled, preventing users from selecting them.",
     },
   },
 };
@@ -224,7 +402,8 @@ Radio.parameters = {
 Switch.parameters = {
   docs: {
     description: {
-      story: "A switch input for boolean values.",
+      story:
+        "A switch input for toggling boolean values, ideal for on/off settings.",
     },
   },
 };
@@ -232,7 +411,8 @@ Switch.parameters = {
 Dropdown.parameters = {
   docs: {
     description: {
-      story: "A dropdown select input.",
+      story:
+        "A dropdown/select input for choosing one option from a list of choices.",
     },
   },
 };
@@ -241,7 +421,7 @@ WithBadge.parameters = {
   docs: {
     description: {
       story:
-        "An input field with an additional badge, useful for showing extra information.",
+        "Input field with an additional badge to indicate status or provide context (e.g., 'Optional', 'Required', 'New').",
     },
   },
 };
@@ -249,7 +429,8 @@ WithBadge.parameters = {
 Disabled.parameters = {
   docs: {
     description: {
-      story: "A disabled input field.",
+      story:
+        "Examples of disabled input fields across all input types, showing how they appear when interaction is not permitted.",
     },
   },
 };
@@ -257,7 +438,8 @@ Disabled.parameters = {
 WithCustomValidation.parameters = {
   docs: {
     description: {
-      story: "An input field with custom validation rules.",
+      story:
+        "Input field with custom validation rules implemented using the customValidation prop.",
     },
   },
 };
@@ -265,7 +447,8 @@ WithCustomValidation.parameters = {
 WithCustomOnChange.parameters = {
   docs: {
     description: {
-      story: "An input field with a custom onChange handler.",
+      story:
+        "Input field with a custom onChange handler to demonstrate event handling customization.",
     },
   },
 };

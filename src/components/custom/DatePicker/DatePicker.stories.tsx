@@ -1,6 +1,7 @@
 import type { Meta } from "@storybook/react";
-import { DatePickerPresets, DatePicker } from "./index";
+import { DatePicker } from "./index";
 import { useState } from "react";
+import { DatePickerPresets } from "./utils";
 
 const meta = {
   title: "Custom/DatePicker",
@@ -325,8 +326,6 @@ const DefaultDatePicker = () => {
   const [preset, setPreset] = useState<DatePickerPresets>(
     DatePickerPresets.lastWeek,
   );
-  const [isOpen, setIsOpen] = useState(false);
-
   const handleDateChange = (dates: [Date | null, Date | null]) => {
     setDateRange(dates);
     setPreset(DatePickerPresets.custom);
@@ -338,13 +337,8 @@ const DefaultDatePicker = () => {
         startDate={dateRange[0]}
         endDate={dateRange[1]}
         onChange={handleDateChange}
-        isOpen={isOpen}
-        setIsOpen={setIsOpen}
         selectedPreset={preset}
         className="rounded-lg p-4 shadow-sm bg-white bg-opacity-10 backdrop-blur-lg"
-        onCancel={() => {
-          setIsOpen(false);
-        }}
         onSave={(dates) => {
           alert("Saved date range: " + JSON.stringify(dates));
           console.log("Saved date range:", {
@@ -352,7 +346,6 @@ const DefaultDatePicker = () => {
             endDate: dates.end,
             preset: dates.preset,
           });
-          setIsOpen(false);
         }}
       />
     </div>
