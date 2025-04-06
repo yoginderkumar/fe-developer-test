@@ -4,7 +4,6 @@ import { tv } from "tailwind-variants";
 import Switch from "@/components/Atoms/Controls/Switch";
 import DropdownMenu from "@/components/Molecules/Dropdowns";
 import Radio from "../RadioButton";
-//import { MenuItem } from "@/types";
 import { IoIosEyeOff } from "react-icons/io";
 import { IoEye } from "react-icons/io5";
 import { Tooltip } from "../../Misc/Tooltip";
